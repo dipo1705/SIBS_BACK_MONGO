@@ -4,6 +4,8 @@ const app = express();
 
 const mongoose = require('mongoose');
 
+const Thing = require('../models/thing');
+
 mongoose.connect('mongodb+srv://didierdipondo:jeanne1705@cluster0.ehwqqeu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
@@ -21,68 +23,42 @@ app.use((req, res, next) => {
 
 
 app.post('/api/stock', (req, res, next) => {
-  console.log(req.body);
-  res.status(201).json({
-    message: 'produit sanguin créé !'
+  delete req.body._id;
+  const thing = new Thing({
+    ...req.body
   });
+  thing.save()
+    .then(() => res.status(201).json({ message: 'Produit enregistré !'}))
+    .catch(error => res.status(400).json({ error }));
+});
+
+
+app.put('/api/stock/:id', (req, res, next) => {
+  Thing.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
+    .then(() => res.status(200).json({ message: 'Produit modifié !'}))
+    .catch(error => res.status(400).json({ error }));
+});
+
+
+app.delete('/api/stock/:id', (req, res, next) => {
+  Thing.deleteOne({ _id: req.params.id })
+    .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
+    .catch(error => res.status(400).json({ error }));
+});
+
+
+app.get('/api/stock/:id', (req, res, next) => {
+  Thing.findOne({ _id: req.params.id })
+    .then(thing => res.status(200).json(thing))
+    .catch(error => res.status(404).json({ error }));
 });
 
 
 app.get('/api/stock', (req, res, next) => {
 
-  const stock = [
-    {
-      "id": "1",
-      "Banquedesang":"Maman Yemo",
-      "Type_Produit": "sang entier",
-      "Groupe_Sanguin":"O+",
-      "Rhésus":"O+",
-      "Quantité_Disponible":"10",
-      "Prix":"25$"
-      
-  },
-
-  {
-      "id": "2",
-      "Banquedesang":"Roi Baudouin",
-      "Type_Produit": "globules rouges",
-      "Groupe_Sanguin":"A+",
-      "Rhésus":"A+",
-      "Quantité_Disponible":"30",
-      "Prix":"45$"
-  },
-
-  {
-  "id": "3",
-  "Banquedesang":"Mabanga",
-  "Type_Produit": "plaquettes",
-  "Groupe_Sanguin":"AB+",
-  "Rhésus":"AB+",
-  "Quantité_Disponible":"50",
-  "Prix":"40$"
-  },
-
-  {
-      "id": "4",
-      "Banquedesang":"Mabanga",
-      "Type_Produit": "plaquettes",
-      "Groupe_Sanguin":"AB+",
-      "Rhésus":"AB+",
-      "Quantité_Disponible":"50",
-      "Prix":"40$"
-      },
-
-      {
-          "id": "5",
-          "Banquedesang":"Mabanga",
-          "Type_Produit": "plaquettes",
-          "Groupe_Sanguin":"AB+",
-          "Rhésus":"AB+",
-          "Quantité_Disponible":"50",
-          "Prix":"40$"
-          }  
-  ];
-  res.status(200).json(stock);
+  Thing.find()
+  .then(things => res.status(200).json(things))
+  .catch(error => res.status(400).json({ error }));
 });
 
 module.exports = app;
