@@ -1,12 +1,17 @@
 const mongoose = require('mongoose');
 
 const thingSchema = mongoose.Schema({
-  banquedesang: { type: String, required: true },
-  typeProduit: { type: String, required: true },
-  groupeSanguin: { type: String, required: true },
-  Rhesus: { type: String, required: true },
-  Quantite: { type: String, required: true },
-  prix: { type: Number, required: true },
+  
+  Banquedesang: { type: String, required: true },
+  Type_Produit: { type: String, required: true },
+  Groupe_Sanguin: { type: String, required: true },
+  Rhésus: { type: String, required: true },
+  Quantité_Disponible: { type: String, required: true },
+  userId: { type: String, required: true },
+  Prix: { type: Number, required: true },
+  
 });
 
 module.exports = mongoose.model('Thing', thingSchema);
+
+
